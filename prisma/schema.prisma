@@ -71,7 +71,7 @@ model Verification {
   @@map("verification")
 }
 
-model Exercicios {
+model Exercicio {
   id Int @id @default(autoincrement())
   nome String
 }

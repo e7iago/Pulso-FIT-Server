@@ -4,12 +4,11 @@ import prisma from "../lib/prisma.js";
 const router = Router();
 
 router.get("/", async (_,res: Response) => {
-
     const userCount = await prisma.user.count();
     res.json(
         userCount == 0
         ? "No users have been added yet."
-        : "Some users have been added to the database.", 
+        : "Some users have been added to the database.",
     );
 })
 

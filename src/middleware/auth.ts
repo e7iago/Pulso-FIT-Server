@@ -31,3 +31,24 @@ export const authenticateUser = async (
     res.status(500).json({ error: 'Erro na validação' });
   }
 };
+
+export const authenticateOptional = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
+    });
+
+    if (session) {
+      req.user = session.session;
+      req.session = session.user;
+    }
+
+    next();
+  } catch (error) {
+    next();
+  }
+};

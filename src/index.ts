@@ -8,14 +8,16 @@ import { authenticateUser } from "./middleware/auth.js";
 const app = express();
 
 app.use(cors({
-    origin: true,
+    origin: "http://localhost:5173",
     credentials: true
 }))
 
-app.all('/api/auth/*splat', toNodeHandler(auth));
-app.use("/api", authenticateUser);
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+app.all('/api/auth/*splat', toNodeHandler(auth));
+
+app.use("/api", authenticateUser);
 router(app);
 
 export default app;

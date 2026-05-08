@@ -97,9 +97,10 @@ model Endereco {
 model Exercicio {
   id              Int               @id @default(autoincrement())
   nome            String
-  treinoExercicio TreinoExercicio[]
   grupoMuscularId Int
-  grupoMuscular   GrupoMuscular     @relation(fields: [grupoMuscularId], references: [id], onDelete: Cascade)
+  treinoExercicio TreinoExercicio[]
+
+  grupoMuscular GrupoMuscular @relation(fields: [grupoMuscularId], references: [id], onDelete: Cascade)
 
   @@map("exercicio")
 }
@@ -120,6 +121,7 @@ model TreinoExercicio {
   exercicioId Int
   peso        Decimal
   unidadePeso String
+  series     Int
   repeticoes  Int
 
   exercicio Exercicio @relation(fields: [exercicioId], references: [id], onDelete: Cascade)
@@ -142,8 +144,8 @@ model Acessos {
 }
 
 model GrupoMuscular {
-  id        Int         @id @default(autoincrement())
-  nome      String
+  id         Int         @id @default(autoincrement())
+  nome       String      @unique
   exercicios Exercicio[]
 
   @@map("grupo_muscular")

@@ -9,15 +9,17 @@ router.get("/", async (_,res: Response) => {
 })
 
 router.post("/", async (req: Request, res: Response) => {
-    const { nome, descricao } = req.body;
+    const { nome, grupoMuscular } = req.body;
 
-    if (!nome || !descricao) {
-        res.status(400).json({ error: "Nome e descrição são obrigatórios" });
-        return;
+    if (!nome || !grupoMuscular) {
+        throw new Error("Nome e grupo muscular são obrigatórios");
+        // res.status(400).json({ error: "Nome e grupo muscular são obrigatórios" });
+        // return;
     }
 
     const exercicio = await ExercicioController.criaExercicio(
-        nome
+        nome,
+        grupoMuscular
     );
 
     res.status(201).json(exercicio);

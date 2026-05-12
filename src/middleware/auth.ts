@@ -27,7 +27,8 @@ export const authenticateUser = async (
     req.session = session.user;
 
   } catch (error) {
-    throw new BusinessError("Erro na validação", 500);
+    console.error("Erro de autenticação:", error);
+    throw new BusinessError("Erro na autenticação", 500);
   }
 
   next();

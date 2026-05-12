@@ -1,4 +1,5 @@
 import prisma from "../lib/prisma.js";
+import BusinessError from "../util/businessError.js";
 
 export interface TreinoExercicioData {
     exercicioId: number;
@@ -25,7 +26,7 @@ class TreinoController {
             return treinos;
         } catch (error) {
             console.error("Erro ao buscar treinos:", error);
-            throw new Error("Não foi possível buscar os treinos.");
+            throw new BusinessError("Não foi possível buscar os treinos.", 500);
         }
     }
 
@@ -53,8 +54,7 @@ class TreinoController {
             return treino;
         } catch (error) {
             console.error("Erro ao criar treino:", error);
-            // Aqui você propaga o erro para o Express (ou quem chamou o método) retornar um status 500 ou 400
-            throw new Error("Erro ao salvar o treino no banco de dados.");
+            throw new BusinessError("Erro ao salvar o treino no banco de dados.", 500);
         }
     }
 

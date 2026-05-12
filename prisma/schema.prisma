@@ -19,6 +19,7 @@ model User {
   accounts      Account[]
   treinos       Treino[]
   pessoas       Pessoa[]
+  acessos       Acessos[]
 
   @@unique([email])
   @@map("user")
@@ -73,17 +74,19 @@ model Verification {
 }
 
 model Pessoa {
-  id       Int        @id @default(autoincrement())
-  userId   String
-  endereco Endereco[]
-  cpf      String
+  id         Int        @id @default(autoincrement())
+  userId     String
+  endereco   Endereco[]
+  cpf        String
+  nascimento DateTime
+  sexo       String
 
   user User @relation(fields: [userId], references: [id])
 }
 
 model Endereco {
   id       String  @id @default(cuid())
-  padrao   Boolean
+  padrao   Boolean 
   pessoaId Int
   cep      Int
   rua      String
@@ -121,7 +124,7 @@ model TreinoExercicio {
   exercicioId Int
   peso        Decimal
   unidadePeso String
-  series     Int
+  series      Int
   repeticoes  Int
 
   exercicio Exercicio @relation(fields: [exercicioId], references: [id], onDelete: Cascade)
@@ -139,6 +142,8 @@ model Acessos {
   id       Int        @id @default(autoincrement())
   dataHora DateTime   @default(now())
   tipo     TipoAcesso
+  userId   String
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("acessos")
 }

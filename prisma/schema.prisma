@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -18,6 +17,9 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  treinos       Treino[]
+  pessoas       Pessoa[]
+  acessos       Acessos[]
 
   @@unique([email])
   @@map("user")
@@ -71,7 +73,85 @@ model Verification {
   @@map("verification")
 }
 
-model Exercicios {
-  id Int @id @default(autoincrement())
-  nome String
+model Pessoa {
+  id         Int        @id @default(autoincrement())
+  userId     String
+  endereco   Endereco[]
+  cpf        String
+  nascimento DateTime
+  sexo       String
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Endereco {
+  id       String  @id @default(cuid())
+  padrao   Boolean 
+  pessoaId Int
+  cep      Int
+  rua      String
+  numero   String?
+  bairro   String
+  cidade   String
+
+  pessoa Pessoa @relation(fields: [pessoaId], references: [id])
+}
+
+model Exercicio {
+  id              Int               @id @default(autoincrement())
+  nome            String
+  grupoMuscularId Int
+  treinoExercicio TreinoExercicio[]
+
+  grupoMuscular GrupoMuscular @relation(fields: [grupoMuscularId], references: [id], onDelete: Cascade)
+
+  @@map("exercicio")
+}
+
+model Treino {
+  id              Int               @id @default(autoincrement())
+  userId          String
+  nome            String
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  treinoExercicio TreinoExercicio[]
+
+  @@map("treino")
+}
+
+model TreinoExercicio {
+  id          Int     @id @default(autoincrement())
+  treinoId    Int
+  exercicioId Int
+  peso        Decimal
+  unidadePeso String
+  series      Int
+  repeticoes  Int
+
+  exercicio Exercicio @relation(fields: [exercicioId], references: [id], onDelete: Cascade)
+  treino    Treino    @relation(fields: [treinoId], references: [id], onDelete: Cascade)
+
+  @@map("treino_exercicio")
+}
+
+enum TipoAcesso {
+  ENTRADA
+  SAIDA
+}
+
+model Acessos {
+  id       Int        @id @default(autoincrement())
+  dataHora DateTime   @default(now())
+  tipo     TipoAcesso
+  userId   String
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("acessos")
+}
+
+model GrupoMuscular {
+  id         Int         @id @default(autoincrement())
+  nome       String      @unique
+  exercicios Exercicio[]
+
+  @@map("grupo_muscular")
 }

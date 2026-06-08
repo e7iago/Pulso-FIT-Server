@@ -19,7 +19,13 @@ model User {
   accounts      Account[]
   treinos       Treino[]
   pessoas       Pessoa[]
-  acessos       Acessos[]
+  acesso        Acesso[]
+
+  role             String?
+  banned           Boolean?          @default(false)
+  banReason        String?
+  banExpires       DateTime?
+  avaliacaoFisicas AvaliacaoFisica[]
 
   @@unique([email])
   @@map("user")
@@ -34,7 +40,10 @@ model Session {
   ipAddress String?
   userAgent String?
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
 
   @@unique([token])
   @@index([userId])
@@ -82,11 +91,13 @@ model Pessoa {
   sexo       String
 
   user User @relation(fields: [userId], references: [id])
+
+  @@map("pessoa")
 }
 
 model Endereco {
   id       String  @id @default(cuid())
-  padrao   Boolean 
+  padrao   Boolean
   pessoaId Int
   cep      Int
   rua      String
@@ -95,11 +106,14 @@ model Endereco {
   cidade   String
 
   pessoa Pessoa @relation(fields: [pessoaId], references: [id])
+
+  @@map("endereco")
 }
 
 model Exercicio {
   id              Int               @id @default(autoincrement())
   nome            String
+  descricao       String?
   grupoMuscularId Int
   treinoExercicio TreinoExercicio[]
 
@@ -112,8 +126,9 @@ model Treino {
   id              Int               @id @default(autoincrement())
   userId          String
   nome            String
-  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   treinoExercicio TreinoExercicio[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("treino")
 }
@@ -130,6 +145,7 @@ model TreinoExercicio {
   exercicio Exercicio @relation(fields: [exercicioId], references: [id], onDelete: Cascade)
   treino    Treino    @relation(fields: [treinoId], references: [id], onDelete: Cascade)
 
+  @@unique([treinoId, exercicioId])
   @@map("treino_exercicio")
 }
 
@@ -138,14 +154,15 @@ enum TipoAcesso {
   SAIDA
 }
 
-model Acessos {
+model Acesso {
   id       Int        @id @default(autoincrement())
   dataHora DateTime   @default(now())
   tipo     TipoAcesso
   userId   String
-  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("acessos")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("acesso")
 }
 
 model GrupoMuscular {
@@ -154,4 +171,25 @@ model GrupoMuscular {
   exercicios Exercicio[]
 
   @@map("grupo_muscular")
+}
+
+model AvaliacaoFisica {
+  id            Int      @id @default(autoincrement())
+  userId        String
+  data          DateTime @default(now())
+  peso          Decimal
+  unidadePeso   String
+  altura        Decimal
+  unidadeAltura String
+
+  unidadeMedida String
+  braco         Decimal
+  quadril       Decimal
+  abdomen       Decimal
+  torax         Decimal
+  perna         Decimal
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("avaliacao_fisica")
 }

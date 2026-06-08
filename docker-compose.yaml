@@ -7,7 +7,7 @@ services:
     ports:
       - "5432:5432"
     networks: 
-      - prisma-network
+      - public-network
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -40,9 +40,27 @@ services:
       postgres:
         condition: service_healthy
 
+# Prisma Studio
+  prisma-studio:
+    container_name: prisma_studio
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: npx prisma studio --port 5555 
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+    ports:
+      - "5555:5555"
+    volumes:
+      - .:/usr/src/app
+    networks: 
+      - prisma-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 networks:
-  prisma-network:
-    
+  prisma-network:    
   public-network:
 
 volumes:

@@ -2,11 +2,13 @@ import type { NextFunction, Request, Response } from "express";
 import { fromNodeHeaders } from "better-auth/node";
 import { auth } from "../lib/auth.js";
 import BusinessError from "../util/businessError.js";
+import { statement } from "../lib/roles.js";
 
 export interface AuthenticatedRequest extends Request {
   user?: any;
   session?: any;
 };
+
 
 export const authenticateUser = async (
   req: AuthenticatedRequest,
@@ -23,8 +25,8 @@ export const authenticateUser = async (
     }
 
     // Adicionar session ao req para uso posterior
-    req.user = session.session;
-    req.session = session.user;
+    req.user = session.user;
+    req.session = session.session;
 
   } catch (error) {
     console.error("Erro de autenticação:", error);
@@ -32,7 +34,7 @@ export const authenticateUser = async (
   }
 
   next();
-};
+}; 
 
 export const authenticateOptional = async (
   req: AuthenticatedRequest,
@@ -45,8 +47,8 @@ export const authenticateOptional = async (
     });
 
     if (session) {
-      req.user = session.session;
-      req.session = session.user;
+      req.user = session.user;
+      req.session = session.session;
     }
 
     next();
